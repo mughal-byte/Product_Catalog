@@ -95,6 +95,10 @@ class ProductController extends Controller
         $selected = $cardOptions->firstWhere('key', $card);
         $listing = null;
         $listingTitle = null;
+        $categoryUrl = null;
+        $categoryPrompt = null;
+        $categoryActive = false;
+        $categoryRunId = null;
         $showListing = $request->exists('card') || $search !== '';
 
         if ($showListing && ($card === '' || $card === 'all')) {
@@ -106,6 +110,10 @@ class ProductController extends Controller
         } elseif ($selected instanceof \stdClass) {
             $listingTitle = $selected->group.' / '.$selected->name;
             $listing = $this->paginateCard($this->matchingProducts($selected->items, $search), max(1, $request->integer('page', 1)));
+            $categoryUrl = $selected->url ?: 'https://'.$site.'/';
+            $categoryActive = (bool) $selected->active;
+            $categoryRunId = $selected->run_id;
+            $categoryPrompt = 'Scrape more products in '.$selected->name.'. Save images, prices, description, and policy in this category.';
         }
 
         return view('products.index', [
@@ -115,6 +123,10 @@ class ProductController extends Controller
             'search' => $search,
             'listing' => $listing,
             'listingTitle' => $listingTitle,
+            'categoryUrl' => $categoryUrl,
+            'categoryPrompt' => $categoryPrompt,
+            'categoryActive' => $categoryActive,
+            'categoryRunId' => $categoryRunId,
             'total' => in_array($site, Product::catalogHosts(), true) ? Product::visible($site)->count() : 0,
             'site' => $site,
             'siteName' => $site,

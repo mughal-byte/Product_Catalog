@@ -70,6 +70,46 @@ class CatalogOwnershipTest extends TestCase
         $this->actingAs($admin)->get('/sites/private-catalog.test/products/'.$productId)->assertOk()->assertSee('Secret Chair');
     }
 
+    public function test_a_category_page_offers_a_scrape_for_more_products(): void
+    {
+        $admin = User::query()->where('email', 'admin@gmail.com')->firstOrFail();
+
+        try {
+            Product::forCategory('private-catalog.test', 'Chairs')->create([
+                'user_id' => $admin->id,
+                'external_id' => 'p1',
+                'site_host' => 'private-catalog.test',
+                'site_name' => 'private-catalog.test',
+                'category' => 'Rooms',
+                'sub_category' => 'Chairs',
+                'product_title' => 'Secret Chair',
+                'product_link' => 'https://private-catalog.test/p/1',
+            ]);
+
+            ScrapeRun::query()->create([
+                'user_id' => $admin->id,
+                'site_url' => 'https://private-catalog.test/categories/rooms/chairs.html',
+                'prompt' => 'chairs',
+                'status' => 'completed',
+                'saved_count' => 1,
+            ]);
+
+            $this->actingAs($admin)
+                ->get('/sites/private-catalog.test')
+                ->assertOk()
+                ->assertSee('Scrape more');
+
+            $this->actingAs($admin)
+                ->get('/sites/private-catalog.test?card='.urlencode('Rooms|Chairs'))
+                ->assertOk()
+                ->assertSee('Scrape more')
+                ->assertSee('https://private-catalog.test/categories/rooms/chairs.html', false)
+                ->assertSee('Scrape more products in Chairs', false);
+        } finally {
+            Product::dropHost('private-catalog.test');
+        }
+    }
+
     public function test_each_category_gets_its_own_folder_and_product_table(): void
     {
         $admin = User::query()->where('email', 'admin@gmail.com')->firstOrFail();

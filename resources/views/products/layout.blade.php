@@ -777,6 +777,17 @@
             white-space: nowrap;
         }
         .product-heading { margin: 8px 0 14px; font-family: "Libre Baskerville", Georgia, serif; font-size: 28px; font-weight: 400; }
+        .category-scrape {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+            margin: 0 0 18px;
+        }
+        .category-scrape label { font-size: 13px; font-weight: 700; }
+        .category-scrape input { flex: 1 1 220px; min-width: 0; }
+        .category-scrape button { flex: 0 0 auto; }
+        .category-scrape p, .category-scrape-note { flex-basis: 100%; margin: 0; color: var(--muted, #6d675e); font-size: 13px; }
         .all-mark {
             display: grid;
             place-items: center;
@@ -1104,6 +1115,8 @@
             .thumbs { grid-template-columns: repeat(4, 1fr); }
             .filters { display: grid; }
             .filters input, .filters select, .filters button, .pager a, .pager span { width: 100%; }
+            .category-scrape { display: grid; }
+            .category-scrape input, .category-scrape button { width: 100%; }
             .pager nav, .pager .filters { display: flex; flex-wrap: wrap; }
             .catalog-grid .site-card, .catalog-grid .site-link { grid-template-columns: 1fr; }
             .catalog-grid .cover, .catalog-grid .mark { min-height: 160px; height: 160px; }

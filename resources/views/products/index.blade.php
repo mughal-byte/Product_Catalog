@@ -56,10 +56,11 @@
                             @if ($item->active)
                                 <a class="btn rescrape-link" href="{{ route('scrape.show', $item->run_id) }}">View</a>
                             @else
-                                <form method="post" action="{{ route('sites.rescrape', $site) }}">
+                                <form method="post" action="{{ route('scrape.store') }}">
                                     @csrf
                                     <input type="hidden" name="site_url" value="{{ $item->url }}">
-                                    <button type="submit">Rescrape</button>
+                                    <input type="hidden" name="prompt" value="Scrape more products in {{ $item->name }}. Save images, prices, description, and policy in this category.">
+                                    <button type="submit">Scrape more</button>
                                 </form>
                             @endif
                         @endif
@@ -88,6 +89,22 @@
     @if ($listing)
         <p class="back"><a href="{{ route('sites.show', $site) }}">Categories</a></p>
         <h2 id="products" class="product-heading">{{ $listingTitle }}</h2>
+        @can('scrape.run')
+            @if ($categoryPrompt)
+                @if ($categoryActive && $categoryRunId)
+                    <p class="category-scrape-note"><a class="btn" href="{{ route('scrape.show', $categoryRunId) }}">View scrape</a></p>
+                @else
+                    <form class="category-scrape panel" method="post" action="{{ route('scrape.store') }}">
+                        @csrf
+                        <label for="category_site_url">Category link</label>
+                        <input id="category_site_url" type="url" name="site_url" value="{{ $categoryUrl }}" placeholder="https://{{ $site }}/" required>
+                        <input type="hidden" name="prompt" value="{{ $categoryPrompt }}">
+                        <button type="submit">Scrape more</button>
+                        <p>New products from this link are added in this category. Products already saved are updated.</p>
+                    </form>
+                @endif
+            @endif
+        @endcan
         <div class="grid">
             @forelse ($listing as $product)
                 <article class="card product-card">

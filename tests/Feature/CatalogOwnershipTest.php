@@ -26,7 +26,7 @@ class CatalogOwnershipTest extends TestCase
 
     public function test_another_user_cannot_open_someone_elses_catalog(): void
     {
-        $admin = User::query()->where('email', 'admin@catalogs.test')->firstOrFail();
+        $admin = User::query()->where('email', 'admin@gmail.com')->firstOrFail();
         $other = User::factory()->create([
             'role_id' => Role::query()->where('slug', 'user')->value('id'),
         ]);
@@ -72,7 +72,7 @@ class CatalogOwnershipTest extends TestCase
 
     public function test_each_category_gets_its_own_folder_and_product_table(): void
     {
-        $admin = User::query()->where('email', 'admin@catalogs.test')->firstOrFail();
+        $admin = User::query()->where('email', 'admin@gmail.com')->firstOrFail();
         $root = public_path('Images/folders');
 
         try {

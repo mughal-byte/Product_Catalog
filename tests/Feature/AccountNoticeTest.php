@@ -153,7 +153,7 @@ class AccountNoticeTest extends TestCase
 
     public function test_an_admin_can_send_a_notification_to_one_account(): void
     {
-        $admin = User::query()->where('email', 'admin@catalogs.test')->firstOrFail();
+        $admin = User::query()->where('email', 'admin@gmail.com')->firstOrFail();
         $user = $this->user();
         $other = $this->user();
 

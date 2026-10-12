@@ -65,7 +65,7 @@ class RoleAndPermissionSeeder extends Seeder
         }
 
         $accounts = [
-            ['name' => 'Admin', 'email' => 'admin@catalogs.test', 'role' => 'admin'],
+            ['name' => 'Admin', 'email' => 'admin@gmail.com', 'role' => 'admin'],
         ];
 
         foreach ($accounts as $account) {
@@ -75,7 +75,7 @@ class RoleAndPermissionSeeder extends Seeder
                 ['email' => $account['email']],
                 [
                     'name' => $account['name'],
-                    'password' => 'Catalogs#2026',
+                    'password' => 'admin@123',
                     'role_id' => $roleId,
                     'email_verified_at' => now(),
                 ],

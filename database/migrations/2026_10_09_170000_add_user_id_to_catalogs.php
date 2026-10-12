@@ -26,7 +26,7 @@ return new class extends Migration
             Product::ensureTable(Product::hostFromTable($name));
         }
 
-        $adminId = DB::table('users')->where('email', 'admin@catalogs.test')->value('id');
+        $adminId = DB::table('users')->where('email', 'admin@gmail.com')->value('id');
 
         if ($adminId === null) {
             return;

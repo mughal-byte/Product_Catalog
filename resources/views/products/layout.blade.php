@@ -26,12 +26,14 @@
             --shadow: 0 10px 30px rgba(26, 24, 20, .06);
         }
         * { box-sizing: border-box; }
+        html, body { max-width: 100%; overflow-x: hidden; }
         body {
             margin: 0;
             color: var(--ink);
             background: var(--paper);
             font-family: Manrope, "Segoe UI", sans-serif;
         }
+        img, video { max-width: 100%; }
         a { color: inherit; }
         header {
             position: sticky;
@@ -59,7 +61,7 @@
             font-size: 22px;
             font-weight: 400;
         }
-        header nav { display: flex; align-items: center; gap: 8px; }
+        header nav { display: flex; align-items: center; flex-wrap: wrap; justify-content: flex-end; gap: 8px; min-width: 0; }
         header nav a {
             color: #f7f3ec;
             text-decoration: none;
@@ -112,6 +114,7 @@
             font-size: 12px;
             font-weight: 700;
         }
+        .account-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 18vw; }
         .account summary::-webkit-details-marker { display: none; }
         .account summary::marker { content: ""; }
         .account summary:hover, .account[open] summary { background: rgba(255, 255, 255, .1); }
@@ -260,7 +263,7 @@
         .plan .pill, .plan .subscribe { justify-self: start; margin-top: auto; }
         .plan .subscribe { display: inline-block; border: 0; border-radius: 999px; padding: 10px 18px; background: #12110f; color: #f7f3ec; font-weight: 700; text-decoration: none; }
         .plan .subscribe:hover { background: #2a261f; color: #fff; }
-        .pay-board { display: grid; grid-template-columns: minmax(240px, .8fr) minmax(0, 1.2fr); gap: 18px; align-items: start; }
+        .pay-board { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: 18px; align-items: start; }
         .pay-summary { display: grid; gap: 8px; align-content: start; }
         .pay-summary h2 { margin: 0; font-family: "Libre Baskerville", Georgia, serif; font-size: 32px; font-weight: 400; }
         .pay-summary .plan-price { margin-top: 4px; }
@@ -291,7 +294,7 @@
         .plan-ledger > div + div { border-top: 1px solid var(--line); }
         .plan-ledger span { color: var(--gold); font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
         .plan-ledger p { margin: 0; line-height: 1.55; }
-        .profile-board { display: grid; grid-template-columns: 280px minmax(0, 1fr); gap: 18px; align-items: start; }
+        .profile-board { display: grid; grid-template-columns: minmax(0, 280px) minmax(0, 1fr); gap: 18px; align-items: start; }
         .profile-photo { display: grid; justify-items: center; text-align: center; gap: 10px; padding: 28px 18px; }
         .avatar {
             position: relative;
@@ -505,15 +508,16 @@
             vertical-align: 1px;
         }
         .pill-user { background: #f3f1ec; color: var(--ink); }
-        .row-actions { display: flex; gap: 8px; justify-content: flex-end; }
+        .row-actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
         .row-actions a.btn-quiet, .row-actions button.btn-danger { padding: 7px 14px; border-radius: 999px; font-size: 13px; }
         .role-notes { margin: 0; padding-left: 18px; color: var(--muted); font-size: 13px; display: grid; gap: 6px; }
         .role-notes strong { color: var(--ink); }
-        main { width: min(1180px, 92vw); margin: 32px auto 72px; }
+        main { width: min(1180px, calc(100% - 32px)); margin: 32px auto 72px; }
         .page-head {
             display: flex;
             justify-content: space-between;
             align-items: flex-end;
+            flex-wrap: wrap;
             gap: 16px;
             margin-bottom: 18px;
         }
@@ -596,7 +600,7 @@
         button.show-password:hover { background: transparent; color: var(--ink); }
         .auth-card button[type="submit"] { border-radius: 999px; }
         .social-login { display: grid; gap: 10px; margin-top: 4px; }
-        .social-row { display: flex; justify-content: center; gap: 8px; }
+        .social-row { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; }
         a.social-btn {
             display: inline-flex;
             align-items: center;
@@ -637,7 +641,7 @@
         .meta { color: var(--muted); font-size: 14px; margin: 0 0 16px; }
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(min(240px, 100%), 1fr));
             gap: 18px;
         }
         .card {
@@ -722,7 +726,7 @@
         }
         .category-picker {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(min(210px, 100%), 1fr));
             gap: 14px;
             margin-bottom: 28px;
         }
@@ -780,7 +784,7 @@
             font-family: "Libre Baskerville", Georgia, serif;
             font-size: 32px;
         }
-        .head-actions { display: flex; align-items: center; gap: 12px; }
+        .head-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; }
         .head-actions .meta { margin: 0; }
         .options { position: relative; }
         .options summary {
@@ -857,7 +861,7 @@
         }
         .product {
             display: grid;
-            grid-template-columns: minmax(0, 1.15fr) minmax(300px, .85fr);
+            grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr);
             gap: 22px;
             align-items: start;
         }
@@ -950,7 +954,7 @@
         button.thumb:hover { background: #fff; }
         button.thumb.is-selected { border-color: var(--gold); }
         .thumbs img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 10px; background: #efeae3; display: block; pointer-events: none; user-select: none; -webkit-user-drag: none; }
-        .detail h2 { font-family: "Libre Baskerville", Georgia, serif; font-size: 32px; font-weight: 400; }
+        .detail h2 { font-family: "Libre Baskerville", Georgia, serif; font-size: 32px; font-weight: 400; overflow-wrap: anywhere; }
         .back { margin: 0 0 18px; }
         .back a {
             display: inline-flex;
@@ -993,7 +997,7 @@
         .scrape input, .scrape textarea { width: 100%; }
         .scrape textarea { resize: vertical; min-height: 140px; }
         .error { margin: 0; color: var(--sale); font-size: 14px; }
-        .layout-2 { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(260px, .7fr); gap: 18px; align-items: start; }
+        .layout-2 { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, .7fr); gap: 18px; align-items: start; }
         .note h2 { margin: 0 0 8px; font-size: 18px; }
         .note ol { margin: 0; padding-left: 18px; color: var(--muted); line-height: 1.6; }
         .runs { list-style: none; padding: 0; margin: 18px 0 0; display: grid; gap: 10px; }
@@ -1077,32 +1081,69 @@
         }
         @keyframes spin { to { transform: rotate(360deg); } }
         .stat { font-family: "Libre Baskerville", Georgia, serif; font-size: 42px; margin: 0; }
+        @media (hover: none) {
+            .category-tile .info,
+            .category-tile form,
+            .category-tile .rescrape-link { opacity: 1; }
+        }
+        @media (max-width: 980px) {
+            .plan-grid, .profile-board, .pay-board, .product, .layout-2 { grid-template-columns: 1fr; }
+            .catalog-grid h2, .detail h2, .page-head h1 { font-size: 28px; }
+        }
         @media (max-width: 800px) {
-            header { align-items: flex-start; flex-direction: column; }
+            header { align-items: flex-start; flex-direction: column; gap: 12px; padding: 14px 16px; }
+            header nav { width: 100%; justify-content: flex-start; }
+            .account-name { max-width: 42vw; }
+            .account-menu, .notice-menu, .options-panel { right: 0; left: auto; }
+            main { width: min(1180px, calc(100% - 24px)); margin: 20px auto 48px; }
             .page-head, .product, .layout-2 { grid-template-columns: 1fr; display: grid; }
-            .page-head { display: block; }
-            .page-head .btn { margin-top: 14px; }
+            .page-head { display: flex; align-items: flex-start; }
+            .page-head .btn { margin-top: 0; }
+            .head-actions, .runs li { align-items: flex-start; }
+            .runs li { flex-direction: column; }
             .thumbs { grid-template-columns: repeat(4, 1fr); }
-            .filters input, .filters select, .filters button { width: 100%; }
+            .filters { display: grid; }
+            .filters input, .filters select, .filters button, .pager a, .pager span { width: 100%; }
+            .pager nav, .pager .filters { display: flex; flex-wrap: wrap; }
             .catalog-grid .site-card, .catalog-grid .site-link { grid-template-columns: 1fr; }
             .catalog-grid .cover, .catalog-grid .mark { min-height: 160px; height: 160px; }
+            .catalog-grid .info { padding: 18px; }
             .profile-board, .role-strip, .plan-grid, .pay-board, .pay-row { grid-template-columns: 1fr; }
+            .plan { min-height: 0; }
             .plan-scale { grid-template-columns: 1fr 1fr; }
             .plan-ledger > div { grid-template-columns: 1fr; gap: 6px; }
             .notify-sent article { align-items: flex-start; flex-direction: column; }
+            .toast-stack { top: 12px; right: 12px; left: 12px; width: auto; }
             .users thead { display: none; }
             .users, .users tbody { display: block; }
             .users tr {
                 display: grid;
-                grid-template-columns: 1fr auto;
+                grid-template-columns: 1fr;
                 gap: 10px;
-                align-items: center;
+                align-items: start;
                 padding: 14px 0;
                 border-bottom: 1px solid var(--line);
             }
             .users tbody tr:last-child { border-bottom: 0; }
             .users td { display: block; border: 0; padding: 0; }
-            .users td:first-child { grid-column: 1 / -1; }
+            .row-actions { justify-content: flex-start; }
+            .category-tile .info,
+            .category-tile form,
+            .category-tile .rescrape-link { opacity: 1; }
+            button.gallery-arrow { width: 36px; height: 36px; }
+            .gallery-prev { left: 8px; }
+            .gallery-next { right: 8px; }
+            .zoom-controls { top: 8px; right: 8px; }
+        }
+        @media (max-width: 520px) {
+            .brand img { height: 40px; }
+            .brand-name strong { font-size: 18px; }
+            .page-head h1, .detail h2, .catalog-grid h2, .auth-card h1 { font-size: 26px; }
+            .plan-price, .stat { font-size: 32px; }
+            .thumbs { grid-template-columns: repeat(3, 1fr); }
+            .plan-scale, .social-row { grid-template-columns: 1fr; display: grid; }
+            a.social-btn { width: 100%; }
+            .account summary { min-width: 0; padding-right: 12px; }
         }
     </style>
 </head>
@@ -1156,7 +1197,7 @@
                 <details class="account">
                     <summary>
                         @include('account.face')
-                        {{ auth()->user()->name }}
+                        <span class="account-name">{{ auth()->user()->name }}</span>
                     </summary>
                     <div class="account-menu">
                         <div class="account-person">

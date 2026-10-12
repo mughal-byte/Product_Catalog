@@ -30,8 +30,8 @@ class AuthenticationTest extends TestCase
     public function test_user_can_sign_in_and_out(): void
     {
         $this->post('/login', [
-            'email' => 'admin@catalogs.test',
-            'password' => 'Catalogs#2026',
+            'email' => 'admin@gmail.com',
+            'password' => 'admin@123',
         ])->assertRedirect(route('sites.index'));
 
         $this->assertAuthenticated();
@@ -85,7 +85,7 @@ class AuthenticationTest extends TestCase
 
     public function test_account_menu_opens_profile_and_subscription(): void
     {
-        $admin = User::query()->where('email', 'admin@catalogs.test')->firstOrFail();
+        $admin = User::query()->where('email', 'admin@gmail.com')->firstOrFail();
 
         $this->actingAs($admin)
             ->get('/')
@@ -119,7 +119,7 @@ class AuthenticationTest extends TestCase
 
     public function test_profile_saves_photo_and_notification_switch(): void
     {
-        $admin = User::query()->where('email', 'admin@catalogs.test')->firstOrFail();
+        $admin = User::query()->where('email', 'admin@gmail.com')->firstOrFail();
 
         $this->actingAs($admin)->put('/profile', [
             'name' => 'Admin',
@@ -136,7 +136,7 @@ class AuthenticationTest extends TestCase
 
     public function test_admin_can_add_a_user(): void
     {
-        $admin = User::query()->where('email', 'admin@catalogs.test')->firstOrFail();
+        $admin = User::query()->where('email', 'admin@gmail.com')->firstOrFail();
         $userRole = Role::query()->where('slug', 'user')->firstOrFail();
 
         $this->actingAs($admin)->post('/users', [

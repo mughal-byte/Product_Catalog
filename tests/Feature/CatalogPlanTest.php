@@ -134,7 +134,7 @@ class CatalogPlanTest extends TestCase
 
     public function test_admin_is_not_limited_and_can_open_users(): void
     {
-        $admin = User::query()->where('email', 'admin@catalogs.test')->firstOrFail();
+        $admin = User::query()->where('email', 'admin@gmail.com')->firstOrFail();
 
         $this->assertNull($admin->catalogLimit());
         $this->assertTrue($admin->canAddCatalog('extra.test'));

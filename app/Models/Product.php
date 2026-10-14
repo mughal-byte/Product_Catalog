@@ -35,6 +35,9 @@ class Product extends Model
     /** @var array<string, true> */
     private static array $ownedTables = [];
 
+    /** @var array<string, bool> */
+    private static array $databaseAvailable = [];
+
     /**
      * Get the attributes that should be cast.
      *
@@ -132,8 +135,57 @@ class Product extends Model
 
         $database = static::catalogDatabaseName($host);
         DB::statement('CREATE DATABASE IF NOT EXISTS '.static::quoteIdentifier($database).' CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci');
+        unset(static::$databaseAvailable[strtolower($host)]);
 
         return static::openCatalogConnection($database);
+    }
+
+    public static function catalogDatabaseAvailable(string $host): bool
+    {
+        $host = strtolower($host);
+
+        if (! static::usesCatalogDatabase()) {
+            return true;
+        }
+
+        if (array_key_exists($host, static::$databaseAvailable)) {
+            return static::$databaseAvailable[$host];
+        }
+
+        $database = Schema::hasTable('catalog_categories') && Schema::hasColumn('catalog_categories', 'database_name')
+            ? DB::table('catalog_categories')->where('host', $host)->whereNotNull('database_name')->value('database_name')
+            : null;
+        $main = DB::connection()->getDatabaseName();
+
+        if (! is_string($database) || $database === '' || $database === $main) {
+            return static::$databaseAvailable[$host] = true;
+        }
+
+        $exists = DB::selectOne(
+            'select SCHEMA_NAME from information_schema.SCHEMATA where SCHEMA_NAME = ? limit 1',
+            [$database],
+        );
+
+        return static::$databaseAvailable[$host] = $exists !== null;
+    }
+
+    private static function emptyCatalogQuery(): Builder
+    {
+        $columns = [
+            'id', 'user_id', 'external_id', 'site_host', 'site_name', 'category', 'sub_category',
+            'product_title', 'product_link', 'image1', 'image2', 'image3', 'image4', 'image5',
+            'description', 'org_price', 'discounted_price', 'policy', 'created_at', 'updated_at',
+        ];
+        $select = implode(', ', array_map(
+            fn (string $column): string => 'null as `'.$column.'`',
+            $columns,
+        ));
+        $model = new static;
+
+        return $model->newQuery()->fromSub(
+            DB::query()->selectRaw($select)->whereRaw('1 = 0'),
+            'catalog_products',
+        );
     }
 
     public static function storageConnection(string $host): string
@@ -275,6 +327,10 @@ class Product extends Model
     {
         $max = 0;
 
+        if (! static::catalogDatabaseAvailable($host)) {
+            return 1;
+        }
+
         $connection = static::storageConnection($host);
 
         foreach (static::tablesForHost($host) as $table) {
@@ -334,13 +390,16 @@ class Product extends Model
     public static function dropHost(string $host): void
     {
         $host = strtolower($host);
-        $connection = static::storageConnection($host);
+        $available = static::catalogDatabaseAvailable($host);
+        $connection = $available ? static::storageConnection($host) : (string) config('database.default');
         $database = static::usesCatalogDatabase() ? static::catalogDatabaseName($host) : null;
         $default = (string) config('database.default');
 
-        foreach (static::tablesForHost($host) as $table) {
-            Schema::connection($connection)->dropIfExists($table);
-            unset(static::$ownedTables[$connection.'|'.$table]);
+        if ($available) {
+            foreach (static::tablesForHost($host) as $table) {
+                Schema::connection($connection)->dropIfExists($table);
+                unset(static::$ownedTables[$connection.'|'.$table]);
+            }
         }
 
         Schema::dropIfExists(static::tableName($host));
@@ -354,10 +413,16 @@ class Product extends Model
             DB::purge($connection);
             DB::statement('DROP DATABASE IF EXISTS '.static::quoteIdentifier($database));
         }
+
+        unset(static::$databaseAvailable[$host]);
     }
 
     public static function onTable(string $host, string $table): Builder
     {
+        if (! static::catalogDatabaseAvailable($host)) {
+            return static::emptyCatalogQuery();
+        }
+
         $model = new static;
         $model->setConnection(static::storageConnection($host));
         $model->setTable($table);
@@ -459,6 +524,10 @@ class Product extends Model
 
         $tables = static::tablesForHost($host);
 
+        if ($tables !== [] && ! static::catalogDatabaseAvailable($host)) {
+            return static::emptyCatalogQuery();
+        }
+
         if ($tables === []) {
             $legacy = static::tableName($host);
 
@@ -469,10 +538,7 @@ class Product extends Model
                 return $model->newQuery();
             }
 
-            $model = new static;
-            $model->setTable('catalog_categories');
-
-            return $model->newQuery()->whereRaw('1 = 0');
+            return static::emptyCatalogQuery();
         }
 
         $connection = static::storageConnection($host);

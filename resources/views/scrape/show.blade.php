@@ -43,7 +43,7 @@
             <h2>this category was stopped</h2>
         @else
             <p class="stat">{{ $run->saved_count }}</p>
-            <h2>products saved</h2>
+            <h2>products checked</h2>
         @endif
         <p class="label">Site link</p>
         <a class="link-box" href="{{ $run->site_url }}" target="_blank" rel="noopener">{{ $run->site_url }}</a>

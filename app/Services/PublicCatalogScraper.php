@@ -56,7 +56,7 @@ class PublicCatalogScraper
                         return $saved;
                     }
 
-                    $save($this->merge($card, $details[$index], $url));
+                    $save($this->merge($card, $details[$index] ?? '', $url));
                     $saved++;
                 }
             }
@@ -323,7 +323,7 @@ class PublicCatalogScraper
     {
         $document = new DOMDocument;
         $previous = libxml_use_internal_errors(true);
-        $document->loadHTML($html);
+        $document->loadHTML($html !== '' ? $html : '<html></html>');
         libxml_clear_errors();
         libxml_use_internal_errors($previous);
 

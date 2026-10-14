@@ -63,7 +63,7 @@ class ScrapeDealerProducts extends Command
                 : implode(', ', array_unique($this->onlyCollections));
             $this->info('Site: '.$this->site);
             $this->info('Scope: '.$scope);
-            $this->touchRun($runId, 'running', 0, 'Scraping '.$scope.'.');
+            $this->touchRun($runId, 'running', 0, 'Checking '.$scope.'.');
 
             $saved = 0;
             $offset = 0;
@@ -83,13 +83,13 @@ class ScrapeDealerProducts extends Command
                     $saved++;
                     $this->savedCount = $saved;
                     $this->line(sprintf('[%d] %s', $saved, $product['name'] ?? $product['id']));
-                    $this->touchRun($runId, 'running', $saved, "Saved {$saved} products from {$scope}.");
+                    $this->touchRun($runId, 'running', $saved, "Checked {$saved} products from {$scope}.");
                 }
 
                 $offset += count($batch);
             } while ($batch !== [] && $offset < $total);
 
-            $this->finishRun($runId, 'completed', $saved, "Saved {$saved} products from {$scope}.");
+            $this->finishRun($runId, 'completed', $saved, $this->scrapeSummary($scope));
             $this->info("Saved {$saved} products.");
 
             return self::SUCCESS;
@@ -1106,7 +1106,7 @@ class ScrapeDealerProducts extends Command
     {
         $document = new \DOMDocument;
         $previous = libxml_use_internal_errors(true);
-        $document->loadHTML($html);
+        $document->loadHTML($html !== '' ? $html : '<html></html>');
         libxml_clear_errors();
         libxml_use_internal_errors($previous);
 
@@ -1149,6 +1149,23 @@ class ScrapeDealerProducts extends Command
      */
     private function collectionsNamedInPrompt(array $collections, string $prompt): array
     {
+        if (preg_match('/Scrape more products in (.+?)\./u', $prompt, $match) === 1) {
+            $wanted = array_values(array_filter(array_map(trim(...), explode('|', $match[1]))));
+            $exact = [];
+
+            foreach ($collections as $id => $name) {
+                foreach ($wanted as $want) {
+                    if (strcasecmp($name, $want) === 0) {
+                        $exact[$id] = $name;
+                    }
+                }
+            }
+
+            if ($exact !== []) {
+                return $exact;
+            }
+        }
+
         $prompt = mb_strtolower($prompt);
         $matched = [];
 
@@ -1188,6 +1205,15 @@ class ScrapeDealerProducts extends Command
         }
 
         return false;
+    }
+
+    private function scrapeSummary(string $scope): string
+    {
+        if ($this->createdCount === 0) {
+            return "No new products. {$this->updatedCount} already saved in {$scope} were checked again.";
+        }
+
+        return "Added {$this->createdCount} new products in {$scope}. Updated {$this->updatedCount} already saved.";
     }
 
     private function touchRun(?int $runId, string $status, int $saved, string $message): void

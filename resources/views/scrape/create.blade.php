@@ -58,6 +58,8 @@
                                     Error
                                 @elseif ($run->status === 'stopped')
                                     Stopped
+                                @elseif ($run->status === 'completed')
+                                    {{ $run->saved_count }} checked
                                 @else
                                     {{ $run->saved_count }} products
                                 @endif
